@@ -19,11 +19,22 @@ def detect_aruco_marker(image, marker_id):
 
     for i, corner in enumerate(corners):
         if(ids[i][0] == marker_id):
+            x = 0
+            y = 0
+
             ordered_corners = order_points(corner[0])
             center_x = (ordered_corners[0][0] + ordered_corners[2][0]) // 2
             center_y = (ordered_corners[0][1] + ordered_corners[2][1]) // 2
-            
-            return center_y, center_x
+
+            if center_y>140 :
+                y = -20
+            elif center_y<100 :
+                y = 20
+            if center_x>140 :
+                x = -20
+            elif center_x<100 :
+                x = 20
+            return x, y, center_x, center_y
     else:
         return None
 
@@ -154,7 +165,6 @@ def detect_markers_in_image(image, draw_reference_corner=True, draw_center=True,
         return image, list(zip(center_pts, ids))
         #return image, list(center_pts), ids
 
-
 def detect_distance_from_image_center(image, selected_pt_x, selected_pt_y, show_detail=True, show_center_arrow=True, show_center=True):
     """
     :param image:
@@ -198,13 +208,4 @@ def detect_distance_from_image_center(image, selected_pt_x, selected_pt_y, show_
 
     return image, x_distance, y_distance, distance
 
-vid = cv2.VideoCapture(0)
-while True:
-    ret, frame = vid.read()
-    frame, info = detect_markers_in_image(frame)   
-    if(info != []):
-        if(info[0][1] != 0):
-            frame, x, y, distance = detect_distance_from_image_center(frame, info[0][0][0], info[0][0][1])
-    cv2.imshow("hi",frame)
-    cv2.waitKey(1)
 
